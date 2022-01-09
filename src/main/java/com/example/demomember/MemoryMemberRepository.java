@@ -8,16 +8,24 @@ import java.util.*;
 public class MemoryMemberRepository implements MemberRepository{
 
     private static final Map<String, Member> store = new HashMap<>();
+    private static long key = 0L;
 
     @Override
     public Member save(Member member) {
-        store.put(member.getId(), member);
+        store.put(String.valueOf(++key), member);
         return member;
     }
 
     @Override
+    public Optional<Member> findByKey(String key) {
+        return Optional.ofNullable(store.get(key));
+    }
+
+    @Override
     public Optional<Member> findById(String id) {
-        return Optional.ofNullable(store.get(id));
+        return store.values().stream()
+                .filter(member -> Objects.equals(member.getId(), id))
+                .findAny();
     }
 
     @Override
